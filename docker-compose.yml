@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  cloud-clip:
+    build: .
+    container_name: cloud-clip
+    restart: always
+    ports:
+      - "9501:9501"
+    environment:
+      # 服务器配置
+      - LISTEN_IP=0.0.0.0              # 监听 IP，默认为 0.0.0.0，可设置为 127.0.0.1
+      - LISTEN_IP6=                    # IPv6 地址，默认为空，可设置为 ::
+      - LISTEN_PORT=8080                # 监听端口，默认为 8080
+      - PREFIX=                        # 子路径，可配合 nginx 使用，格式: /cloud-clipboard
+      
+      # 功能配置
+      - MESSAGE_NUM=100                 # 历史记录数量，默认为 100
+      - AUTH_PASSWORD=                  # 访问密码，默认为 false，可自定义字符串密码
+      - TEXT_LIMIT=4096                 # 文本长度限制，默认为 4096 (2048个汉字)
+      - FILE_EXPIRE=3600                # 文件过期时间，默认为 3600 (1小时)，单位为秒
+      - FILE_LIMIT=104857600            # 文件大小限制，默认为 104857600 (100MB)，单位为字节
+      - ROOM_LIST=true                  # 是否启用房间列表展示功能，默认 false
+      
+      # SSL 配置
+      - MKCERT_DOMAIN_OR_IP=           # mkcert 域名或 IP，默认为空，仅域名支持通配符 *
+      - MANUAL_KEY_PATH=                # 手动设置私钥路径，默认为空，优先级高于 MKCERT_DOMAIN_OR_IP
+      - MANUAL_CERT_PATH=               # 手动设置证书路径，默认为空，优先级高于 MKCERT_DOMAIN_OR_IP
+    volumes:
+      - ./uploads:/app/uploads          # 上传文件存储目录，请根据需要修改路径
+      - ./data:/app/data               # 应用数据目录
+    networks:
+      - cloud-clip-network
+
+networks:
+  cloud-clip-network:
+    driver: bridge

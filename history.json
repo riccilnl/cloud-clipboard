@@ -1,0 +1,44 @@
+{
+  "file": null,
+  "receive": [
+    {
+      "id": 1,
+      "type": "text",
+      "room": "default",
+      "timestamp": 1765212429,
+      "senderIP": "::1",
+      "senderDevice": {
+        "browser": "Chrome 142",
+        "os": "Windows 10",
+        "type": "Other"
+      },
+      "content": "啊啊"
+    },
+    {
+      "id": 2,
+      "type": "text",
+      "room": "default",
+      "timestamp": 1765212473,
+      "senderIP": "::1",
+      "senderDevice": {
+        "browser": "Chrome 142",
+        "os": "Windows 10",
+        "type": "Other"
+      },
+      "content": "啊啊"
+    },
+    {
+      "id": 3,
+      "type": "text",
+      "room": "default",
+      "timestamp": 1765233939,
+      "senderIP": "::1",
+      "senderDevice": {
+        "browser": "Chrome 142",
+        "os": "Windows 10",
+        "type": "Other"
+      },
+      "content": "啊啊啊啊啊啊"
+    }
+  ]
+}
