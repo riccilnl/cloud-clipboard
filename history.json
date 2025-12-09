@@ -13,6 +13,19 @@
         "type": "Other"
       },
       "content": "啊啊"
+    },
+    {
+      "id": 2,
+      "type": "text",
+      "room": "default",
+      "timestamp": 1765268076,
+      "senderIP": "::1",
+      "senderDevice": {
+        "browser": "Chrome 142",
+        "os": "Windows 10",
+        "type": "Other"
+      },
+      "content": "啊啊"
     }
   ]
 }

@@ -800,7 +800,7 @@ provide('websocket', { connect, disconnect })
     pointer-events: none;
 }
 
-.v-navigation-drawer .v-list-item__prepend {
-    margin-inline-end: 8px !important;
+.v-navigation-drawer .v-list-item__spacer {
+    width: 10px !important;
 }
 </style>
