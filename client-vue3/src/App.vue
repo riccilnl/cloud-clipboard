@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-app-bar color="primary" elevation="4" app>
+        <v-app-bar color="primary" elevation="0" app>
             <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
             <v-app-bar-title @click="goHome" style="cursor: pointer;">
                 {{ t('cloudClipboard') }}<span class="d-none d-sm-inline" v-if="globalState.room">（{{ t('room') }}：<abbr :title="t('copyRoomName')" style="cursor:pointer" @click.stop="copyRoomName(globalState.room)">{{globalState.room}}</abbr>）</span>
@@ -50,7 +50,7 @@
         </v-app-bar>
 
         <v-navigation-drawer v-model="drawer" temporary color="primary">
-                <v-list>
+                <v-list density="compact">
                     <v-list-item :href="`#/?room=${globalState.room}`">
                         <template v-slot:prepend>
                             <v-icon>mdi-content-paste</v-icon>
@@ -110,7 +110,7 @@
                             {{ t('showTimestamp') }}
                         </v-list-item-title>
                         <template v-slot:append>
-                            <v-switch v-model="globalState.showTimestamp" color="primary" hide-details></v-switch>
+                            <v-switch v-model="globalState.showTimestamp" color="white" hide-details></v-switch>
                         </template>
                     </v-list-item>
 
@@ -122,7 +122,7 @@
                             {{ t('showDeviceInfo') }}
                         </v-list-item-title>
                         <template v-slot:append>
-                            <v-switch v-model="globalState.showDeviceInfo" color="primary" hide-details></v-switch>
+                            <v-switch v-model="globalState.showDeviceInfo" color="white" hide-details></v-switch>
                         </template>
                     </v-list-item>
 
@@ -134,7 +134,7 @@
                             {{ t('showSenderIP') }}
                         </v-list-item-title>
                         <template v-slot:append>
-                            <v-switch v-model="globalState.showSenderIP" color="primary" hide-details></v-switch>
+                            <v-switch v-model="globalState.showSenderIP" color="white" hide-details></v-switch>
                         </template>
                     </v-list-item>
 
