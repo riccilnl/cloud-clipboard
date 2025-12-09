@@ -208,7 +208,14 @@ const closeDialog = () => {
 // 处理发送成功
 const handleSendSuccess = () => {
     console.log('发送成功，关闭对话框')
-    closeDialog()
+    // 先移除 popstate 监听，避免触发 history.back()
+    window.removeEventListener('popstate', handlePopState)
+    // 清理 history state
+    if (history.state && history.state.dialogOpen) {
+        history.back()
+    }
+    // 关闭对话框
+    dialog.value = false
 }
 
 const handlePopState = (event) => {
