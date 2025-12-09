@@ -16,16 +16,14 @@
                 </v-col>
 
                 <v-col cols="12" md="8">
-                    <div ref="scrollContainer" class="virtual-scroll-container" @scroll="handleScroll">
-                        <div :style="{ height: totalHeight + 'px', position: 'relative' }">
-                            <component
-                                v-for="item in visibleItems"
-                                :key="item.id"
-                                :is="item.type === 'text' ? ReceivedText : ReceivedFile"
-                                :meta="item"
-                                :style="{ position: 'absolute', top: item.offsetTop + 'px', width: '100%' }"
-                            />
-                        </div>
+                    <div :style="{ height: totalHeight + 'px', position: 'relative' }">
+                        <component
+                            v-for="item in visibleItems"
+                            :key="item.id"
+                            :is="item.type === 'text' ? ReceivedText : ReceivedFile"
+                            :meta="item"
+                            :style="{ position: 'absolute', top: item.offsetTop + 'px', width: '100%' }"
+                        />
                     </div>
                     <div class="text-center text-caption text-grey py-2">
                         {{ globalState.received.length ? t('alreadyAtBottom') : t('emptyHere') }}
@@ -160,27 +158,35 @@ const globalState = inject('globalState')
 const { connect } = inject('websocket')
 
 // 虚拟滚动
-const scrollContainer = ref(null)
-const itemHeight = 120
-const visibleCount = ref(20)
+const messageHeight = 120
 const scrollTop = ref(0)
 
-const totalHeight = computed(() => globalState.received.length * itemHeight)
+const totalHeight = computed(() => globalState.received.length * messageHeight)
 
 const visibleItems = computed(() => {
-    const start = Math.floor(scrollTop.value / itemHeight)
-    const end = Math.min(start + visibleCount.value, globalState.received.length)
+    const viewportStart = scrollTop.value
+    const viewportEnd = scrollTop.value + window.innerHeight
     
-    return globalState.received.slice(start, end).map((item, index) => ({
+    const firstIndex = Math.max(0, Math.floor(viewportStart / messageHeight))
+    const lastIndex = Math.min(
+        globalState.received.length - 1,
+        Math.ceil(viewportEnd / messageHeight)
+    )
+    
+    return globalState.received.slice(firstIndex, lastIndex + 1).map((item, index) => ({
         ...item,
-        offsetTop: (start + index) * itemHeight
+        offsetTop: (firstIndex + index) * messageHeight
     }))
 })
 
-const handleScroll = (e) => {
-    scrollTop.value = e.target.scrollTop
+const handleScroll = () => {
+    scrollTop.value = window.scrollY
 }
 
+// 监听页面滚动
+if (typeof window !== 'undefined') {
+    window.addEventListener('scroll', handleScroll)
+}
 
 
 // 数据
@@ -262,12 +268,6 @@ watch(dialog, (newval, oldval) => {
 // 清理
 onBeforeUnmount(() => {
     window.removeEventListener('popstate', handlePopState)
+    window.removeEventListener('scroll', handleScroll)
 })
 </script>
-
-<style scoped>
-.virtual-scroll-container {
-    height: calc(100vh - 200px);
-    overflow-y: auto;
-}
-</style>
