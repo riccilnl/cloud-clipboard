@@ -657,7 +657,7 @@ setInterval(() => {
 
 // 监听路由变化
 watch(() => route.query.room, (newRoom) => {
-    globalState.room = newRoom || ''
+    globalState.room = newRoom || 'default'
 })
 
 // 挂载时初始化
@@ -668,7 +668,10 @@ onMounted(() => {
     }
     
     // 不在这里设置 globalState.dark，因为已经在初始化时设置了
-    globalState.room = route.query.room || ''
+    // 从 URL 获取 room 参数，如果没有则保持 main.js 中的初始值
+    if (route.query.room !== undefined) {
+        globalState.room = route.query.room
+    }
     
     // 连接 WebSocket
     connect()
@@ -713,6 +716,15 @@ onMounted(() => {
     window.addEventListener('offline', () => {
         console.log('网络离线')
     })
+})
+
+// 监听路由变化，当 room 参数改变时重新连接
+watch(() => route.query.room, (newRoom) => {
+    if (newRoom !== undefined && newRoom !== globalState.room) {
+        globalState.room = newRoom
+        disconnect()
+        connect()
+    }
 })
 
 // 提供 websocket 方法给子组件

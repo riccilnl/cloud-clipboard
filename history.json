@@ -39,6 +39,19 @@
         "type": "Other"
       },
       "content": "啊啊啊啊啊啊"
+    },
+    {
+      "id": 4,
+      "type": "text",
+      "room": "default",
+      "timestamp": 1765242689,
+      "senderIP": "::1",
+      "senderDevice": {
+        "browser": "Chrome 142",
+        "os": "Windows 10",
+        "type": "Other"
+      },
+      "content": "啊啊"
     }
   ]
 }

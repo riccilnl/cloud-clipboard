@@ -8,9 +8,27 @@ export function useWebSocket() {
   const instance = getCurrentInstance()
   const $http = instance.proxy.$http
   
+  // 安全的 localStorage 访问
+  const safeGetItem = (key, defaultValue = null) => {
+    try {
+      return localStorage.getItem(key) || defaultValue
+    } catch (error) {
+      console.warn('localStorage access denied:', error)
+      return defaultValue
+    }
+  }
+  
+  const safeSetItem = (key, value) => {
+    try {
+      localStorage.setItem(key, value)
+    } catch (error) {
+      console.warn('localStorage access denied:', error)
+    }
+  }
+  
   const websocket = ref(null)
   const websocketConnecting = ref(false)
-  const authCode = ref(localStorage.getItem('auth') || '')
+  const authCode = ref(safeGetItem('auth', ''))
   const authCodeDialog = ref(false)
   const room = ref(router.currentRoute.value.query.room || '')
   const roomInput = ref('')
@@ -29,14 +47,14 @@ export function useWebSocket() {
   const received = ref([])
   const device = ref([])
   
-  const showTimestamp = ref(localStorage.getItem('showTimestamp') !== null 
-    ? localStorage.getItem('showTimestamp') === 'true' 
+  const showTimestamp = ref(safeGetItem('showTimestamp') !== null 
+    ? safeGetItem('showTimestamp') === 'true' 
     : true)
-  const showDeviceInfo = ref(localStorage.getItem('showDeviceInfo') !== null 
-    ? localStorage.getItem('showDeviceInfo') === 'true' 
+  const showDeviceInfo = ref(safeGetItem('showDeviceInfo') !== null 
+    ? safeGetItem('showDeviceInfo') === 'true' 
     : false)
-  const showSenderIP = ref(localStorage.getItem('showSenderIP') !== null 
-    ? localStorage.getItem('showSenderIP') === 'true' 
+  const showSenderIP = ref(safeGetItem('showSenderIP') !== null 
+    ? safeGetItem('showSenderIP') === 'true' 
     : false)
   
   const event = {
@@ -123,8 +141,17 @@ export function useWebSocket() {
       ws.onmessage = e => {
         try {
           const parsed = JSON.parse(e.data)
-          (event[parsed.event] || (() => {}))(parsed.data)
-        } catch {}
+          console.log('收到 WebSocket 消息:', parsed)
+          const handler = event[parsed.event]
+          if (handler) {
+            console.log('调用事件处理器:', parsed.event, parsed.data)
+            handler(parsed.data)
+          } else {
+            console.warn('未找到事件处理器:', parsed.event)
+          }
+        } catch (error) {
+          console.error('解析 WebSocket 消息失败:', error, e.data)
+        }
       }
     }).catch(error => {
       websocketConnecting.value = false
