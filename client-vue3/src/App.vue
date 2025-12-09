@@ -795,12 +795,12 @@ watch(() => route.query.room, (newRoom) => {
 provide('websocket', { connect, disconnect })
 </script>
 
-<style scoped>
-.v-navigation-drawer :deep(.v-navigation-drawer__border) {
+<style>
+.v-navigation-drawer .v-navigation-drawer__border {
     pointer-events: none;
 }
 
-.v-navigation-drawer :deep(.v-list-item__prepend) {
+.v-navigation-drawer .v-list-item__prepend {
     margin-inline-end: 8px !important;
 }
 </style>
