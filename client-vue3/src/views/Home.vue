@@ -16,14 +16,17 @@
                 </v-col>
 
                 <v-col cols="12" md="8">
-                    <v-fade-transition group>
-                        <component
-                            v-for="item in globalState.received"
-                            :key="item.id"
-                            :is="item.type === 'text' ? ReceivedText : ReceivedFile"
-                            :meta="item"
-                        />
-                    </v-fade-transition>
+                    <div ref="scrollContainer" class="virtual-scroll-container" @scroll="handleScroll">
+                        <div :style="{ height: totalHeight + 'px', position: 'relative' }">
+                            <component
+                                v-for="item in visibleItems"
+                                :key="item.id"
+                                :is="item.type === 'text' ? ReceivedText : ReceivedFile"
+                                :meta="item"
+                                :style="{ position: 'absolute', top: item.offsetTop + 'px', width: '100%' }"
+                            />
+                        </div>
+                    </div>
                     <div class="text-center text-caption text-grey py-2">
                         {{ globalState.received.length ? t('alreadyAtBottom') : t('emptyHere') }}
                     </div>
@@ -156,6 +159,30 @@ const route = useRoute()
 const globalState = inject('globalState')
 const { connect } = inject('websocket')
 
+// 虚拟滚动
+const scrollContainer = ref(null)
+const itemHeight = 120
+const visibleCount = ref(20)
+const scrollTop = ref(0)
+
+const totalHeight = computed(() => globalState.received.length * itemHeight)
+
+const visibleItems = computed(() => {
+    const start = Math.floor(scrollTop.value / itemHeight)
+    const end = Math.min(start + visibleCount.value, globalState.received.length)
+    
+    return globalState.received.slice(start, end).map((item, index) => ({
+        ...item,
+        offsetTop: (start + index) * itemHeight
+    }))
+})
+
+const handleScroll = (e) => {
+    scrollTop.value = e.target.scrollTop
+}
+
+
+
 // 数据
 const fab = ref(false)
 const dialog = ref(false)
@@ -230,18 +257,17 @@ watch(dialog, (newval, oldval) => {
     }
 })
 
-// 监听接收消息，自动滚动
-watch(() => globalState.received, () => {
-    nextTick(() => {
-        const scrollThreshold = 200
-        if (document.documentElement.scrollHeight - window.innerHeight - window.scrollY < scrollThreshold) {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
-        }
-    })
-}, { deep: true })
+
 
 // 清理
 onBeforeUnmount(() => {
     window.removeEventListener('popstate', handlePopState)
 })
 </script>
+
+<style scoped>
+.virtual-scroll-container {
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+</style>
