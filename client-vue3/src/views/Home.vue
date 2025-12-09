@@ -201,6 +201,12 @@ const openDialog = (type) => {
     })
 }
 
+const handlePopState = (event) => {
+    if (dialog.value && (!event.state || !event.state.dialogOpen)) {
+        dialog.value = false
+    }
+}
+
 const closeDialog = () => {
     dialog.value = false
 }
@@ -208,20 +214,7 @@ const closeDialog = () => {
 // 处理发送成功
 const handleSendSuccess = () => {
     console.log('发送成功，关闭对话框')
-    // 先移除 popstate 监听，避免触发 history.back()
-    window.removeEventListener('popstate', handlePopState)
-    // 清理 history state
-    if (history.state && history.state.dialogOpen) {
-        history.back()
-    }
-    // 关闭对话框
     dialog.value = false
-}
-
-const handlePopState = (event) => {
-    if (dialog.value && (!event.state || !event.state.dialogOpen)) {
-        closeDialog()
-    }
 }
 
 // 监听对话框状态
