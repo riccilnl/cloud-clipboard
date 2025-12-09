@@ -49,8 +49,7 @@
             </v-tooltip>
         </v-app-bar>
 
-        <v-main>
-            <v-navigation-drawer v-model="drawer" temporary color="primary">
+        <v-navigation-drawer v-model="drawer" temporary color="primary">
                 <v-list>
                     <v-list-item :href="`#/?room=${globalState.room}`">
                         <template v-slot:prepend>
@@ -142,6 +141,7 @@
                 </v-list>
             </v-navigation-drawer>
 
+        <v-main>
             <router-view v-slot="{ Component }">
                 <keep-alive v-if="route.meta.keepAlive">
                     <component :is="Component" />
@@ -400,7 +400,9 @@ const changeLocale = (newLocale) => {
 }
 
 const goHome = () => {
-    if (route.path !== '/' || Object.keys(route.query).length > 0) {
+    if (route.path !== '/') {
+        router.push('/')
+    } else if (route.query.room) {
         router.push('/')
     }
 }
@@ -661,6 +663,19 @@ const handleWebSocketEvent = (event, data) => {
     }
 }
 
+// 监听显示设置变化，保存到 localStorage
+watch(() => globalState.showTimestamp, (newVal) => {
+    localStorage.setItem('showTimestamp', newVal)
+})
+
+watch(() => globalState.showDeviceInfo, (newVal) => {
+    localStorage.setItem('showDeviceInfo', newVal)
+})
+
+watch(() => globalState.showSenderIP, (newVal) => {
+    localStorage.setItem('showSenderIP', newVal)
+})
+
 // 监听主题颜色变化
 watch(primaryColor, (newVal) => {
     theme.themes.value.light.colors.primary = newVal
@@ -705,13 +720,7 @@ setInterval(() => {
     }
 }, 60000)
 
-// 监听路由变化
-watch(() => route.query.room, (newRoom) => {
-    const roomValue = newRoom || ''
-    if (roomValue !== globalState.room) {
-        globalState.room = roomValue
-    }
-})
+
 
 // 挂载时初始化
 onMounted(() => {
@@ -772,12 +781,11 @@ onMounted(() => {
 })
 
 // 监听路由变化，当 room 参数改变时重新连接
-watch(() => route.query.room, (newRoom, oldRoom) => {
-    const newRoomValue = newRoom || ''
-    const oldRoomValue = oldRoom || ''
-    if (newRoomValue !== oldRoomValue) {
-        console.log(`房间切换: ${oldRoomValue} -> ${newRoomValue}`)
-        globalState.room = newRoomValue
+watch(() => route.query.room, (newRoom) => {
+    const targetRoom = newRoom || ''
+    if (targetRoom !== globalState.room) {
+        console.log(`房间切换: ${globalState.room} -> ${targetRoom}`)
+        globalState.room = targetRoom
         disconnect()
         connect()
     }
