@@ -522,7 +522,9 @@ const formatTime = (timestamp) => {
 
 const connect = () => {
     globalState.websocketConnecting = true
+    console.log('开始连接 WebSocket...')
     axios.get('server').then(response => {
+        console.log('获取服务器配置成功:', response.data)
         if (globalState.authCode) localStorage.setItem('auth', globalState.authCode)
         return new Promise((resolve, reject) => {
             const wsUrl = new URL(response.data.server)
@@ -533,26 +535,47 @@ const connect = () => {
                     wsUrl.searchParams.set('auth', globalState.authCode)
                 } else {
                     globalState.authCodeDialog = true
+                    reject(new Error('需要认证'))
                     return
                 }
             }
             wsUrl.searchParams.set('room', globalState.room)
+            console.log('WebSocket URL:', wsUrl.toString())
             const ws = new WebSocket(wsUrl)
-            ws.onopen = () => resolve(ws)
-            ws.onerror = reject
+            ws.onopen = () => {
+                console.log('WebSocket 连接成功')
+                resolve(ws)
+            }
+            ws.onerror = (error) => {
+                console.error('WebSocket 连接错误:', error)
+                reject(error)
+            }
         })
     }).then((ws) => {
         globalState.websocket = ws
         globalState.websocketConnecting = false
         globalState.retry = 0
         globalState.received = []
-        setInterval(() => { ws.send('') }, 30000)
+        console.log('WebSocket 已连接，开始监听消息')
+        
+        // 心跳保持连接
+        const heartbeatInterval = setInterval(() => { 
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send('')
+            } else {
+                clearInterval(heartbeatInterval)
+            }
+        }, 30000)
+        
         ws.onclose = () => {
+            console.log('WebSocket 连接关闭')
+            clearInterval(heartbeatInterval)
             globalState.websocket = null
             globalState.websocketConnecting = false
             globalState.device = []
             if (globalState.retry < 3) {
                 globalState.retry++
+                console.log(`尝试重新连接 (${globalState.retry}/3)`)
                 setTimeout(() => connect(), 3000)
             } else if (globalState.authCode) {
                 globalState.authCodeDialog = true
@@ -561,12 +584,39 @@ const connect = () => {
         ws.onmessage = e => {
             try {
                 const parsed = JSON.parse(e.data)
+                console.log('收到 WebSocket 消息:', parsed)
                 handleWebSocketEvent(parsed.event, parsed.data)
-            } catch {}
+            } catch (error) {
+                console.error('解析 WebSocket 消息失败:', error, e.data)
+            }
         }
     }).catch(error => {
+        console.error('连接失败:', error)
         globalState.websocketConnecting = false
+        failure()
     })
+}
+
+const disconnect = () => {
+    console.log('断开 WebSocket 连接')
+    globalState.websocketConnecting = false
+    if (globalState.websocket) {
+        globalState.websocket.onclose = () => {}
+        globalState.websocket.close()
+        globalState.websocket = null
+    }
+    globalState.device = []
+}
+
+const failure = () => {
+    console.log('连接失败处理')
+    localStorage.removeItem('auth')
+    globalState.websocket = null
+    globalState.device = []
+    if (globalState.retry++ < 3) {
+        console.log(`重试连接 (${globalState.retry}/3)`)
+        connect()
+    }
 }
 
 const handleWebSocketEvent = (event, data) => {
@@ -657,7 +707,10 @@ setInterval(() => {
 
 // 监听路由变化
 watch(() => route.query.room, (newRoom) => {
-    globalState.room = newRoom || 'default'
+    const roomValue = newRoom || ''
+    if (roomValue !== globalState.room) {
+        globalState.room = roomValue
+    }
 })
 
 // 挂载时初始化
@@ -668,10 +721,10 @@ onMounted(() => {
     }
     
     // 不在这里设置 globalState.dark，因为已经在初始化时设置了
-    // 从 URL 获取 room 参数，如果没有则保持 main.js 中的初始值
-    if (route.query.room !== undefined) {
-        globalState.room = route.query.room
-    }
+    // 从 URL 获取 room 参数
+    const initialRoom = route.query.room || ''
+    globalState.room = initialRoom
+    console.log('初始房间:', initialRoom)
     
     // 连接 WebSocket
     connect()
@@ -719,16 +772,19 @@ onMounted(() => {
 })
 
 // 监听路由变化，当 room 参数改变时重新连接
-watch(() => route.query.room, (newRoom) => {
-    if (newRoom !== undefined && newRoom !== globalState.room) {
-        globalState.room = newRoom
+watch(() => route.query.room, (newRoom, oldRoom) => {
+    const newRoomValue = newRoom || ''
+    const oldRoomValue = oldRoom || ''
+    if (newRoomValue !== oldRoomValue) {
+        console.log(`房间切换: ${oldRoomValue} -> ${newRoomValue}`)
+        globalState.room = newRoomValue
         disconnect()
         connect()
     }
 })
 
 // 提供 websocket 方法给子组件
-provide('websocket', { connect })
+provide('websocket', { connect, disconnect })
 </script>
 
 <style scoped>

@@ -34,7 +34,7 @@ const globalState = reactive({
     websocketConnecting: false,
     authCode: localStorage.getItem('auth') || '',
     authCodeDialog: false,
-    room: 'default',
+    room: '',
     roomInput: '',
     roomDialog: false,
     retry: 0
