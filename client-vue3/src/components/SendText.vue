@@ -6,14 +6,14 @@
             variant="outlined"
             density="compact"
             rows="6"
-            :counter="globalState.config.text.limit"
+            :counter="globalState.config?.text?.limit || 0"
             :placeholder="t('enterTextToSend')"
             v-model="globalState.send.text"
         ></v-textarea>
         <div class="text-right">
             <v-btn
                 color="primary"
-                :disabled="!globalState.send.text || !globalState.websocket || globalState.send.text.length > globalState.config.text.limit"
+                :disabled="!globalState.send.text || !globalState.websocket || (globalState.config?.text?.limit && globalState.send.text.length > globalState.config.text.limit)"
                 @click="send"
             >{{ t('send') }}</v-btn>
         </div>

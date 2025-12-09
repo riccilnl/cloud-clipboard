@@ -20,7 +20,7 @@
                         <component
                             v-for="item in globalState.received"
                             :key="item.id"
-                            :is="item.type === 'text' ? 'received-text' : 'received-file'"
+                            :is="item.type === 'text' ? ReceivedText : ReceivedFile"
                             :meta="item"
                         />
                     </v-fade-transition>
