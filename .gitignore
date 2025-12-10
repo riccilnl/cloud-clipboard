@@ -6,3 +6,6 @@ build
 .DS_Store
 *.log
 lib/static
+history.json
+cloud-clip.exe
+cloud-clip-new.exe
