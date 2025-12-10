@@ -808,4 +808,18 @@ provide('websocket', { connect, disconnect })
 .v-navigation-drawer .v-list-item__spacer {
     width: 10px !important;
 }
+
+/* 隐藏滚动条 - 适用于 PWA */
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 和 Edge */
+}
+
+*::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+html, body {
+    overflow-x: hidden;
+}
 </style>

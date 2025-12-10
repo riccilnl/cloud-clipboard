@@ -1,4 +1,4 @@
-module github.com/jonnyan404/cloud-clipboard-go/cloud-clip
+module cloud-clip
 
 go 1.23.0
 
