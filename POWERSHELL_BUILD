@@ -1,0 +1,43 @@
+# PowerShell 环境下的 Linux 交叉编译
+
+## 问题
+PowerShell 不支持 bash 风格的 `GOOS=linux GOARCH=amd64` 语法
+
+## 解决方案
+
+### 方法1：使用 PowerShell 环境变量（推荐）
+```powershell
+$env:GOOS = "linux"
+$env:GOARCH = "amd64"
+go build -tags embed -o cloud-clip
+```
+
+### 方法2：使用 setx 命令（持久化）
+```powershell
+setx GOOS linux
+setx GOARCH amd64
+# 重启 PowerShell 后运行
+go build -tags embed -o cloud-clip
+```
+
+### 方法3：使用 Git Bash（如果安装了）
+```bash
+GOOS=linux GOARCH=amd64 go build -tags embed -o cloud-clip
+```
+
+## 推荐操作
+请使用**方法1**，这是最直接的：
+```powershell
+$env:GOOS = "linux"
+$env:GOARCH = "amd64"
+go build -tags embed -o cloud-clip
+```
+
+## 验证构建
+构建完成后，检查文件类型：
+```powershell
+file cloud-clip
+# 应该显示: ELF 64-bit LSB executable
+```
+
+如果显示 `PE32+ executable`，说明还是 Windows 版本。
