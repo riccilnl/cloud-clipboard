@@ -10,6 +10,29 @@ const vuetify = createVuetify({
   icons: {
     defaultSet: 'mdi',
   },
+  defaults: {
+    VCard: {
+      rounded: 'lg',
+    },
+    VBtn: {
+      rounded: 'lg',
+    },
+    VTextField: {
+      rounded: 'lg',
+    },
+    VTextarea: {
+      rounded: 'lg',
+    },
+    VSheet: {
+      rounded: 'lg',
+    },
+    VChip: {
+      rounded: 'lg',
+    },
+    VDialog: {
+      rounded: 'lg',
+    },
+  },
   theme: {
     defaultTheme: 'light',
     themes: {

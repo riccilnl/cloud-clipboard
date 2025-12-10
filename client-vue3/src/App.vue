@@ -635,6 +635,11 @@ const handleWebSocketEvent = (event, data) => {
                 globalState.received.splice(index, 1)
             }
             break
+        case 'clearAll':
+            // 清空剪贴板
+            globalState.received = []
+            console.log('剪贴板已清空')
+            break
         case 'config':
             globalState.config = data
             console.log(`%c Cloud Clipboard ${data.version} by Jonnyan404 %c https://github.com/Jonnyan404/cloud-clipboard-go `,

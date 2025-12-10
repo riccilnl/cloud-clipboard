@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, inject, onMounted, getCurrentInstance } from 'vue'
+import { ref, inject, onMounted, nextTick, getCurrentInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -46,7 +46,12 @@ const send = () => {
     ).then(response => {
         console.log('Send success')
         globalState.send.text = ''
-        textarea.value?.focus()
+        // 使用 nextTick 确保 DOM 更新后再聚焦
+        nextTick(() => {
+            setTimeout(() => {
+                textarea.value?.focus()
+            }, 100)
+        })
         // 触发成功事件
         emit('success')
     }).catch(error => {
