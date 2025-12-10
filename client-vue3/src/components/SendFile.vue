@@ -2,7 +2,7 @@
     <div>
         <div class="text-h6 text-primary mb-4">{{ t('sendFile') }}</div>
         <v-card
-            variant="outlined"
+            variant="tonal"
             class="pa-3 mb-6 d-flex flex-row align-center"
             @dragenter.prevent
             @dragover.prevent

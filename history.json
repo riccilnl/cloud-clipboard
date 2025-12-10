@@ -2,17 +2,17 @@
   "file": null,
   "receive": [
     {
-      "id": 2,
+      "id": 5,
       "type": "text",
       "room": "default",
-      "timestamp": 1765357566,
+      "timestamp": 1765359719,
       "senderIP": "::1",
       "senderDevice": {
         "browser": "Chrome 142",
         "os": "Windows 10",
         "type": "Other"
       },
-      "content": "\n清空剪贴板"
+      "content": "无法访问此网站"
     }
   ]
 }

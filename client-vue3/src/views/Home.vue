@@ -8,7 +8,7 @@
                     <send-file ref="sendFileDesktop"></send-file>
                     <v-divider class="my-4"></v-divider>
                     <!-- 页面二维码 -->
-                    <v-card variant="outlined" class="mt-4 pa-4 text-center">
+                    <v-card variant="flat" class="mt-4 pa-4 text-center">
                         <v-card-subtitle class="text-center">{{ t('scanToAccessPage') }}</v-card-subtitle>
                         <qrcode-vue :value="currentPageUrl" :size="150" level="H" />
                         <div class="text-caption mt-2" style="word-break: break-all;">{{ currentPageUrl }}</div>

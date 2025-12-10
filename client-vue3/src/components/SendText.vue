@@ -3,7 +3,7 @@
         <div class="text-h6 text-primary mb-4">{{ t('sendText') }}</div>
         <v-textarea
             ref="textarea"
-            variant="outlined"
+            variant="solo-filled"
             density="compact"
             rows="6"
             :counter="globalState.config?.text?.limit || 0"
