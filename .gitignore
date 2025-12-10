@@ -7,5 +7,6 @@ build
 *.log
 lib/static
 history.json
+cloud-clip
 cloud-clip.exe
 cloud-clip-new.exe
